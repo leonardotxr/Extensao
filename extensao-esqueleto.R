@@ -17,8 +17,6 @@
 # verificar se a leitura foi feita corretamente e a estrutura dos dados
 # nomeie o banco de dados como dados_sinasc
 
-<<<<<<< HEAD
-=======
 dados_sinasc <- read.csv("SINASC_2015.csv", header = TRUE, sep = ";", dec = ",") 
 head(dados_sinasc)
 str(dados_sinasc)
@@ -28,7 +26,6 @@ dados_sinasc_ac <- subset(dados_sinasc, substr(as.character(CODMUNRES), 1, 2) ==
 
 # Prepara a verificação para TNRC (Registros completos nas 61 variáveis originais)
 completo_61 <- complete.cases(dados_sinasc_ac)
->>>>>>> sinasc
 
 # Tarefa 2. Reduzir dados_sinasc apenas para as colunas que serão utilizadas, nomeando este novo banco de dados como dados_sinasc_1
 # as colunas serão 1, 4, 5, 6, 7, 12, 13, 14, 15, 19, 21, 22, 23, 24, 35, 38, 44, 46, 48, 59, 60, 61
@@ -53,34 +50,29 @@ completo_22 <- complete.cases(dados_sinasc_1)
 # 50: MS, 51: MT, 52: GO, 53: DF 
 
 # observar abaixo o número de nascimentos por UF de residência para certificar-se que seu banco de dados está correto
-<<<<<<< HEAD
 # 11: 27918     12: 16980     13: 80097     14: 11409     15: 143657    16: 15750      17: 25110
-=======
 # 11: 27918     12: 16980     13: 80097     14: 11412     15: 143657    16: 15750      17: 25110
->>>>>>> sinasc
+
 # 21: 117564    22: 49253     23: 132516    24: 49099     25: 59089     26: 145024     27: 52257     28: 34917     29: 206655
 # 31: 268305    32: 56941     33: 236960    35: 634026     
 # 41: 160947    42: 97223     43: 148359
 # 50: 44142     51: 56673     52: 100672    53: 46122 
 
-<<<<<<< HEAD
+
 # Exportar o arquivo com o nome dados_sinasc_2.csv
 
-=======
+
 
 dados_sinasc_2 <- dados_sinasc_1
 dados_sinasc_2$COMPLETO_61 <- completo_61
 dados_sinasc_2$COMPLETO_22 <- completo_22
->>>>>>> sinasc
+
 
 # Ao concluir a Tarefa 3 da Etapa 1 commite e envie para o repositório REMOTO o script e dados_sinasc_2.csv com o comentário "Dados do estado UF (coloque o nome da UF) e script de sua obtenção"
 
 
 # Tarefa 4. Verificar em dados_sinasc_2 a frequência das categorias das seguintes variáveis: LOCNASC, ESTCIVMAE, GESTACAO, GRAVIDEZ, PARTO,
-<<<<<<< HEAD
 # SEXO, APGAR5, RACACOR, IDANOMAL, ESCMAE2010, RACACORMAE, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK
-
-=======
 # SEXO, RACACOR, IDANOMAL, ESCMAE2010, RACACORMAE, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK
 
 table(dados_sinasc_2$LOCNASC)
@@ -105,17 +97,14 @@ unique(dados_sinasc_2$SEMAGESTAC)
 unique(dados_sinasc_2$APGAR5)
 unique(dados_sinasc_2$PESO)
 summary(dados_sinasc_2$PESO)
->>>>>>> sinasc
 
 # Tarefa 5. Atribuir para cada variável de dados_sinasc_2 como sendo NA a categoria de "Não informado ou Ignorado", geralmente com código 9
 # KOTELCHUCK = 9 significa "não informado"   TPROBSON = 11 significa "não classificado por falta de informação"
 # veja o dicionário do SINASC para identificar qual o código das categorias de cada variável
-<<<<<<< HEAD
 # Em variáveis quantitativas como IDADEMAE, APGAR5 e PESO e SEMAGESTAC verificar se existem valores como 99 para NA
 
 
 # Tarefa 6. Atribuir legendas para as categorias das variáveis investigadas na etapa 4.
-=======
 # Em variáveis quantitativas como IDADEMAE, CONSPRENAT, APGAR5 e PESO e SEMAGESTAC verificar se existem valores como 99 para NA
 dados_sinasc_2$LOCNASC[dados_sinasc_2$LOCNASC == 9] = NA
 dados_sinasc_2$IDADEMAE[dados_sinasc_2$IDADEMAE == 99] = NA
@@ -142,7 +131,6 @@ n_total_nasc_MUN_sem_missing = tapply(complete.cases(dados_sinasc_2), dados_sina
 
 
 # Tarefa 6. Atribuir legendas para as categorias das variáveis qualitativas investigadas na tarefa 4.
->>>>>>> sinasc
 # Exemplo: dados_sinasc_2$KOTELCHUCK = factor(dados_sinasc_2$KOTELCHUCK, levels = c(1,2,3,4,5), 
 # labels = c("Não realizou pré-natal", "Inadequado", "Intermediário", "Adequado",  
 # "Mais que adequado")
@@ -150,8 +138,6 @@ n_total_nasc_MUN_sem_missing = tapply(complete.cases(dados_sinasc_2), dados_sina
 # ATENçÃO: 1. Na hora de escrever os labels, somente a primeira letra da palavra é maiúscula. Exemplo para SEXO: Feminino e Masculino
 #          2. Nesta Tarefa 6 não crie novas variáveis no banco de dados
 
-<<<<<<< HEAD
-=======
 dados_sinasc_2$LOCNASC = factor(dados_sinasc_2$LOCNASC, levels = c(1,2,3,4), labels = c("Hospital", "Outros estabelecimentos de saúde", "Domicílio", "Outros"))
 dados_sinasc_2$ESTCIVMAE = factor(dados_sinasc_2$ESTCIVMAE, levels = c(1,2,3,4,5), labels = c("Solteira", "Casada", "Viúva", "Separada judicialmente/divorciada", "União estável"))
 dados_sinasc_2$GESTACAO = factor(dados_sinasc_2$GESTACAO, levels = c(1,2,3,4,5,6), labels = c("Menos de 22 semanas", "22 a 27 semanas", "28 a 31 semanas", "32 a 36 semanas", "32 a 36 semanas", "42 semanas e mais"))
@@ -167,24 +153,20 @@ dados_sinasc_2$TPROBSON = factor(dados_sinasc_2$TPROBSON, levels = c(1,2,3,4,5,6
 dados_sinasc_2$PARIDADE = factor(dados_sinasc_2$PARIDADE, levels = c(0,1), labels = c("Nulípara", "Multípara"))
 dados_sinasc_2$KOTELCHUCK = factor(dados_sinasc_2$KOTELCHUCK, levels = c(1,2,3,4,5), labels = c("Não realizou pré-natal", "Inadequado", "Intermediário", "Adequado", "Mais que adequado"))
 
->>>>>>> sinasc
+
 
 # Tarefa 7. Categorizar as variáveis IDADEMAE, PESO e APGAR5 e criar variáveis referentes ao deslocamento materno (peregrinação) e estado civil
 # nova variável: dados_sinasc_2$F_PESO com PESO: < 2500: Baixo peso, >=2500 e < 4000: Peso normal, >= 4000: Macrossomia
 # nova variável dados_sinasc_2$F_IDADE com IDADEMAE: <15, 15-19, 20-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50+
 # nova variável dados_sinasc_2$F_APGAR5 com APGAR5: < 7: Baixo, >= 7: Normal
 # Atenção para casos de NA em IDADEMAE, PESO e APGAR5
-<<<<<<< HEAD
 
-=======
->>>>>>> sinasc
 # nova variável: dados_sinasc_2$PERIG: Não: CODMUNNASC igual a CODMUNRES, Sim: CODMUNNASC diferente de CODMUNRES
 # nova variável: dados_sinasc_2$ESTCIV: Sem companheiro: ESTCIVMAE 1, 3 ou 4, Com companheiro: ESTCIVMAE 2 ou 5
 # Ao categorizar as variáveis, garantir que sejam transformadas em tipo fator
 
 
-<<<<<<< HEAD
-=======
+
 dados_sinasc_2$F_IDADE = ifelse(dados_sinasc_2$IDADEMAE < 15, "<15",
                                 ifelse(dados_sinasc_2$IDADEMAE <= 19, "15-19",
                                        ifelse(dados_sinasc_2$IDADEMAE <= 24, "20-24",
@@ -215,14 +197,14 @@ dados_sinasc_2$ESTCIV = factor(dados_sinasc_2$ESTCIV, levels = c("Sem companheir
 
 
 
->>>>>>> sinasc
+
 # Tarefa 8. Agregar ao banco de dados_sinasc_2 as informações PESO_P10 e PESO_P90 a partir de Tabela_PIG_Brasil.csv
 # a Tabela PIG informa P10 e P90 dos pesos, de acordo com a idade gestacional
 # criar nova variável referente ao peso, de acordo com a idade gestacional, conforme indicado abaixo
 # nova variável apenas para casos de GRAVIDEZ Única: dados_sinasc_2$F_PIG: PIG: PESO < PESO_P10, AIG: PESO_P10 <= PESO <= PESO_P90, GIG: PESO > PESO_P90
 # Atenção para casos de NA em SEMAGESTAC, PESO ou SEXO. Lembre-se também que em dados_sinasc_2 SEXO está como fator com as categorias Feminino e Masculino.
 
-<<<<<<< HEAD
+
 
 # Tarefa 9. Obter as frequências das categorias das variáveis qualitativas e medidas descritivas de variáveis quantitativas e salvar os resultados em novas variáveis.
 # Exemplo: freq_SEXO = table(dados_sinasc_2$SEXO)   media_peso = mean(dados_sinasc_2$PESO)
@@ -284,7 +266,7 @@ dados_sinasc_2$ESTCIV = factor(dados_sinasc_2$ESTCIV, levels = c("Sem companheir
 
 # Tarefa 11: Exporte o banco de dados com o nome SINASC_UF.csv
 
-=======
+
 # Leitura da Tabela PIG
 tabela_pig <- read.csv("Tabela_PIG_Brasil.csv", sep = ";", dec = ",")
 tabela_pig$SEXO <- factor(trimws(tabela_pig$SEXO), levels = c("Masculino", "Feminino"))
@@ -474,7 +456,6 @@ ncol(SINASC_AC)
 # Tarefa 11: Exporte o banco de dados com o nome SINASC_UF.csv
 
 write.csv(base_final, "SINASC_AC.csv", row.names = FALSE)
->>>>>>> sinasc
 
 
 # Ao terminar a ETAPA 1 commite e envie para o repositório REMOTO com o comentário "Dados da UF e Script Etapa 1"
