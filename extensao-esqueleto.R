@@ -453,7 +453,7 @@ SINASC_AC <- bind_rows(resumo_uf, resumo_municipios)
 nrow(SINASC_AC)
 ncol(SINASC_AC)
 
-# Tarefa 11: Exporte o banco de dados com o nome SINASC_UF.csv
+# Tarefa 11: Exportando o banco de dados com o nome SINASC_AC.csv
 
 write.csv(base_final, "SINASC_AC.csv", row.names = FALSE)
 
