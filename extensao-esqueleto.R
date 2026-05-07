@@ -17,12 +17,35 @@
 # verificar se a leitura foi feita corretamente e a estrutura dos dados
 # nomeie o banco de dados como dados_sinasc
 
+<<<<<<< HEAD
+=======
+dados_sinasc <- read.csv("SINASC_2015.csv", header = TRUE, sep = ";", dec = ",") 
+head(dados_sinasc)
+str(dados_sinasc)
+
+# Filtrar o banco original inteiro para o AC (código 12 antes de excluir colunas
+dados_sinasc_ac <- subset(dados_sinasc, substr(as.character(CODMUNRES), 1, 2) == "12")
+
+# Prepara a verificação para TNRC (Registros completos nas 61 variáveis originais)
+completo_61 <- complete.cases(dados_sinasc_ac)
+>>>>>>> sinasc
 
 # Tarefa 2. Reduzir dados_sinasc apenas para as colunas que serão utilizadas, nomeando este novo banco de dados como dados_sinasc_1
 # as colunas serão 1, 4, 5, 6, 7, 12, 13, 14, 15, 19, 21, 22, 23, 24, 35, 38, 44, 46, 48, 59, 60, 61
 # nomes das respectivas variáveis: CONTADOR, CODMUNNASC, LOCNASC, IDADEMAE, ESTCIVMAE, CODMUNRES, GESTACAO, GRAVIDEZ, PARTO,
 # SEXO, APGAR5, RACACOR, PESO, IDANOMAL, ESCMAE2010, RACACORMAE, SEMAGESTAC, CONSPRENAT, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK
 
+colunas_selecionadas <- c(1, 4, 5, 6, 7, 12, 13, 14, 15, 19, 21, 22, 23, 24, 35, 38, 44, 46, 48, 59, 60, 61)
+dados_sinasc_1 <- dados_sinasc_ac[, colunas_selecionadas]
+
+names(dados_sinasc_1) <- c("CONTADOR", "CODMUNNASC", "LOCNASC", "IDADEMAE", "ESTCIVMAE", 
+                           "CODMUNRES", "GESTACAO", "GRAVIDEZ", "PARTO", "SEXO", 
+                           "APGAR5", "RACACOR", "PESO", "IDANOMAL", "ESCMAE2010", 
+                           "RACACORMAE", "SEMAGESTAC", "CONSPRENAT", "TPAPRESENT", 
+                           "TPROBSON", "PARIDADE", "KOTELCHUCK")
+
+# Prepara a verificação para TNRCR (Registros completos nas 22 variáveis)
+completo_22 <- complete.cases(dados_sinasc_1)
 
 # Tarefa 3. Reduzir dados_sinasc_1 apenas para o estado que o aluno irá trabalhar (utilizar os dois primeiros dígitos de CODMUNRES), nomeando este novo banco de dados como dados_sinasc_2
 # Códigos das UF: 11: RO, 12: AC, 13: AM, 14: RR, 15: PA, 16: AP, 17: TO, 21: MA, 22: PI, 23: CE, 24: RN
@@ -30,29 +53,96 @@
 # 50: MS, 51: MT, 52: GO, 53: DF 
 
 # observar abaixo o número de nascimentos por UF de residência para certificar-se que seu banco de dados está correto
+<<<<<<< HEAD
 # 11: 27918     12: 16980     13: 80097     14: 11409     15: 143657    16: 15750      17: 25110
+=======
+# 11: 27918     12: 16980     13: 80097     14: 11412     15: 143657    16: 15750      17: 25110
+>>>>>>> sinasc
 # 21: 117564    22: 49253     23: 132516    24: 49099     25: 59089     26: 145024     27: 52257     28: 34917     29: 206655
 # 31: 268305    32: 56941     33: 236960    35: 634026     
 # 41: 160947    42: 97223     43: 148359
 # 50: 44142     51: 56673     52: 100672    53: 46122 
 
+<<<<<<< HEAD
 # Exportar o arquivo com o nome dados_sinasc_2.csv
 
+=======
+
+dados_sinasc_2 <- dados_sinasc_1
+dados_sinasc_2$COMPLETO_61 <- completo_61
+dados_sinasc_2$COMPLETO_22 <- completo_22
+>>>>>>> sinasc
 
 # Ao concluir a Tarefa 3 da Etapa 1 commite e envie para o repositório REMOTO o script e dados_sinasc_2.csv com o comentário "Dados do estado UF (coloque o nome da UF) e script de sua obtenção"
 
 
 # Tarefa 4. Verificar em dados_sinasc_2 a frequência das categorias das seguintes variáveis: LOCNASC, ESTCIVMAE, GESTACAO, GRAVIDEZ, PARTO,
+<<<<<<< HEAD
 # SEXO, APGAR5, RACACOR, IDANOMAL, ESCMAE2010, RACACORMAE, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK
 
+=======
+# SEXO, RACACOR, IDANOMAL, ESCMAE2010, RACACORMAE, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK
+
+table(dados_sinasc_2$LOCNASC)
+table(dados_sinasc_2$ESTCIVMAE)
+table(dados_sinasc_2$GESTACAO)
+table(dados_sinasc_2$GRAVIDEZ)
+table(dados_sinasc_2$PARTO)
+table(dados_sinasc_2$SEXO)
+table(dados_sinasc_2$RACACOR)
+table(dados_sinasc_2$IDANOMAL)
+table(dados_sinasc_2$ESCMAE2010)
+table(dados_sinasc_2$RACACORMAE)
+table(dados_sinasc_2$TPAPRESENT)
+table(dados_sinasc_2$TPROBSON)
+table(dados_sinasc_2$PARIDADE)
+table(dados_sinasc_2$KOTELCHUCK)
+
+# Aproveitando para ver os valores das variáveis quantitativas
+unique(dados_sinasc_2$IDADEMAE)
+unique(dados_sinasc_2$CONSPRENAT)
+unique(dados_sinasc_2$SEMAGESTAC)
+unique(dados_sinasc_2$APGAR5)
+unique(dados_sinasc_2$PESO)
+summary(dados_sinasc_2$PESO)
+>>>>>>> sinasc
 
 # Tarefa 5. Atribuir para cada variável de dados_sinasc_2 como sendo NA a categoria de "Não informado ou Ignorado", geralmente com código 9
 # KOTELCHUCK = 9 significa "não informado"   TPROBSON = 11 significa "não classificado por falta de informação"
 # veja o dicionário do SINASC para identificar qual o código das categorias de cada variável
+<<<<<<< HEAD
 # Em variáveis quantitativas como IDADEMAE, APGAR5 e PESO e SEMAGESTAC verificar se existem valores como 99 para NA
 
 
 # Tarefa 6. Atribuir legendas para as categorias das variáveis investigadas na etapa 4.
+=======
+# Em variáveis quantitativas como IDADEMAE, CONSPRENAT, APGAR5 e PESO e SEMAGESTAC verificar se existem valores como 99 para NA
+dados_sinasc_2$LOCNASC[dados_sinasc_2$LOCNASC == 9] = NA
+dados_sinasc_2$IDADEMAE[dados_sinasc_2$IDADEMAE == 99] = NA
+dados_sinasc_2$ESTCIVMAE[dados_sinasc_2$ESTCIVMAE == 9] = NA
+dados_sinasc_2$GESTACAO[dados_sinasc_2$GESTACAO == 9] = NA
+dados_sinasc_2$GRAVIDEZ[dados_sinasc_2$GRAVIDEZ == 9] = NA
+dados_sinasc_2$PARTO[dados_sinasc_2$PARTO == 9] = NA
+dados_sinasc_2$SEXO[dados_sinasc_2$SEXO == 0 | dados_sinasc_2$SEXO == 9] = NA
+dados_sinasc_2$APGAR5[dados_sinasc_2$APGAR5 == 99] = NA
+dados_sinasc_2$PESO[dados_sinasc_2$PESO == 9999] = NA
+dados_sinasc_2$IDANOMAL[dados_sinasc_2$IDANOMAL == 9] = NA
+dados_sinasc_2$ESCMAE2010[dados_sinasc_2$ESCMAE2010 == 9] = NA
+dados_sinasc_2$CONSPRENAT[dados_sinasc_2$CONSPRENAT == 99] = NA
+dados_sinasc_2$TPAPRESENT[dados_sinasc_2$TPAPRESENT == 9] = NA
+dados_sinasc_2$TPROBSON[dados_sinasc_2$TPROBSON == 11] = NA
+dados_sinasc_2$KOTELCHUCK[dados_sinasc_2$KOTELCHUCK == 9] = NA
+summary(dados_sinasc_2)
+
+# Por curiosidade, verificando o tamanho dos banco de dados referente ao estado e aos municípios com e sem NAs
+n_total_nasc_UF = nrow(dados_sinasc_2)
+n_total_nasc_UF_sem_missing = sum(complete.cases(dados_sinasc_2))
+n_total_nasc_MUN = tapply(rep(1, nrow(dados_sinasc_2)), dados_sinasc_2$CODMUNRES, sum)
+n_total_nasc_MUN_sem_missing = tapply(complete.cases(dados_sinasc_2), dados_sinasc_2$CODMUNRES, sum)
+
+
+# Tarefa 6. Atribuir legendas para as categorias das variáveis qualitativas investigadas na tarefa 4.
+>>>>>>> sinasc
 # Exemplo: dados_sinasc_2$KOTELCHUCK = factor(dados_sinasc_2$KOTELCHUCK, levels = c(1,2,3,4,5), 
 # labels = c("Não realizou pré-natal", "Inadequado", "Intermediário", "Adequado",  
 # "Mais que adequado")
@@ -60,24 +150,79 @@
 # ATENçÃO: 1. Na hora de escrever os labels, somente a primeira letra da palavra é maiúscula. Exemplo para SEXO: Feminino e Masculino
 #          2. Nesta Tarefa 6 não crie novas variáveis no banco de dados
 
+<<<<<<< HEAD
+=======
+dados_sinasc_2$LOCNASC = factor(dados_sinasc_2$LOCNASC, levels = c(1,2,3,4), labels = c("Hospital", "Outros estabelecimentos de saúde", "Domicílio", "Outros"))
+dados_sinasc_2$ESTCIVMAE = factor(dados_sinasc_2$ESTCIVMAE, levels = c(1,2,3,4,5), labels = c("Solteira", "Casada", "Viúva", "Separada judicialmente/divorciada", "União estável"))
+dados_sinasc_2$GESTACAO = factor(dados_sinasc_2$GESTACAO, levels = c(1,2,3,4,5,6), labels = c("Menos de 22 semanas", "22 a 27 semanas", "28 a 31 semanas", "32 a 36 semanas", "32 a 36 semanas", "42 semanas e mais"))
+dados_sinasc_2$GRAVIDEZ = factor(dados_sinasc_2$GRAVIDEZ, levels = c(1,2,3), labels = c("Única", "Dupla", "Tripla ou mais"))
+dados_sinasc_2$PARTO = factor(dados_sinasc_2$PARTO, levels = c(1,2), labels = c("Vaginal", "Cesário"))
+dados_sinasc_2$SEXO = factor(dados_sinasc_2$SEXO, levels = c(1,2), labels = c("Masculino", "Feminino"))
+dados_sinasc_2$RACACOR = factor(dados_sinasc_2$RACACOR, levels = c(1,2,3,4,5), labels = c("Branca", "Preta", "Amarela", "Parda", "Indígena"))
+dados_sinasc_2$IDANOMAL = factor(dados_sinasc_2$IDANOMAL, levels = c(1,2), labels = c("Sim", "Não"))
+dados_sinasc_2$ESCMAE2010 = factor(dados_sinasc_2$ESCMAE2010, levels = c(0,1,2,3,4,5), labels = c("Sem escolaridade", "Fundamental I (1ª a 4ª série)", "Fundamental II (5ª a 8ª série)", "Médio (antigo 2º grau)", "Superior incompleto", "Superior completo"))
+dados_sinasc_2$RACACORMAE = factor(dados_sinasc_2$RACACORMAE, levels = c(1,2,3,4,5), labels = c("Branca", "Preta", "Amarela", "Parda", "Indígena"))
+dados_sinasc_2$TPAPRESENT = factor(dados_sinasc_2$TPAPRESENT, levels = c(1,2,3), labels = c("Cefálico", "Pélvica ou podálica", "Transversa"))
+dados_sinasc_2$TPROBSON = factor(dados_sinasc_2$TPROBSON, levels = c(1,2,3,4,5,6,7,8,9,10), labels = c("Grupo 1", "Grupo 2", "Grupo 3", "Grupo 4", "Grupo 5", "Grupo 6", "Grupo 7", "Grupo 8", "Grupo 9", "Grupo 10"))
+dados_sinasc_2$PARIDADE = factor(dados_sinasc_2$PARIDADE, levels = c(0,1), labels = c("Nulípara", "Multípara"))
+dados_sinasc_2$KOTELCHUCK = factor(dados_sinasc_2$KOTELCHUCK, levels = c(1,2,3,4,5), labels = c("Não realizou pré-natal", "Inadequado", "Intermediário", "Adequado", "Mais que adequado"))
+
+>>>>>>> sinasc
 
 # Tarefa 7. Categorizar as variáveis IDADEMAE, PESO e APGAR5 e criar variáveis referentes ao deslocamento materno (peregrinação) e estado civil
 # nova variável: dados_sinasc_2$F_PESO com PESO: < 2500: Baixo peso, >=2500 e < 4000: Peso normal, >= 4000: Macrossomia
 # nova variável dados_sinasc_2$F_IDADE com IDADEMAE: <15, 15-19, 20-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50+
 # nova variável dados_sinasc_2$F_APGAR5 com APGAR5: < 7: Baixo, >= 7: Normal
 # Atenção para casos de NA em IDADEMAE, PESO e APGAR5
+<<<<<<< HEAD
 
+=======
+>>>>>>> sinasc
 # nova variável: dados_sinasc_2$PERIG: Não: CODMUNNASC igual a CODMUNRES, Sim: CODMUNNASC diferente de CODMUNRES
 # nova variável: dados_sinasc_2$ESTCIV: Sem companheiro: ESTCIVMAE 1, 3 ou 4, Com companheiro: ESTCIVMAE 2 ou 5
 # Ao categorizar as variáveis, garantir que sejam transformadas em tipo fator
 
 
+<<<<<<< HEAD
+=======
+dados_sinasc_2$F_IDADE = ifelse(dados_sinasc_2$IDADEMAE < 15, "<15",
+                                ifelse(dados_sinasc_2$IDADEMAE <= 19, "15-19",
+                                       ifelse(dados_sinasc_2$IDADEMAE <= 24, "20-24",
+                                              ifelse(dados_sinasc_2$IDADEMAE <= 29, "25-29",
+                                                     ifelse(dados_sinasc_2$IDADEMAE <= 34, "30-34",
+                                                            ifelse(dados_sinasc_2$IDADEMAE <= 39, "35-39",
+                                                                   ifelse(dados_sinasc_2$IDADEMAE <= 44, "40-44",
+                                                                          ifelse(dados_sinasc_2$IDADEMAE <= 49, "45-49",
+                                                                                 "50+"))))))))
+dados_sinasc_2$F_IDADE = factor(dados_sinasc_2$F_IDADE,
+                                levels = c("<15","15-19","20-24","25-29","30-34","35-39","40-44","45-49","50+"), ordered = TRUE)
+
+dados_sinasc_2$F_PESO = ifelse(dados_sinasc_2$PESO < 2500, "Baixo peso",
+                               ifelse(dados_sinasc_2$PESO < 4000, "Peso normal",
+                                      "Macrossomia"))
+dados_sinasc_2$F_PESO = factor(dados_sinasc_2$F_PESO, levels = c("Baixo peso","Peso normal","Macrossomia"))
+
+dados_sinasc_2$F_APGAR5 = ifelse(dados_sinasc_2$APGAR5 < 7, "Baixo", "Normal")
+dados_sinasc_2$F_APGAR5 = factor(dados_sinasc_2$F_APGAR5,levels = c("Baixo","Normal"))
+
+dados_sinasc_2$PERIG = ifelse(is.na(dados_sinasc_2$CODMUNNASC) | is.na(dados_sinasc_2$CODMUNRES), NA,
+                              ifelse(dados_sinasc_2$CODMUNNASC == dados_sinasc_2$CODMUNRES, "Não", "Sim"))
+dados_sinasc_2$PERIG = factor(dados_sinasc_2$PERIG, levels = c("Não", "Sim"))
+
+dados_sinasc_2$ESTCIV = ifelse(dados_sinasc_2$ESTCIVMAE %in% c("Solteira", "Viúva", "Separada judicialmente/divorciada"), "Sem companheiro",
+                               ifelse(dados_sinasc_2$ESTCIVMAE %in% c("Casada", "União estável"), "Com companheiro", NA))
+dados_sinasc_2$ESTCIV = factor(dados_sinasc_2$ESTCIV, levels = c("Sem companheiro","Com companheiro"))
+
+
+
+>>>>>>> sinasc
 # Tarefa 8. Agregar ao banco de dados_sinasc_2 as informações PESO_P10 e PESO_P90 a partir de Tabela_PIG_Brasil.csv
 # a Tabela PIG informa P10 e P90 dos pesos, de acordo com a idade gestacional
 # criar nova variável referente ao peso, de acordo com a idade gestacional, conforme indicado abaixo
 # nova variável apenas para casos de GRAVIDEZ Única: dados_sinasc_2$F_PIG: PIG: PESO < PESO_P10, AIG: PESO_P10 <= PESO <= PESO_P90, GIG: PESO > PESO_P90
 # Atenção para casos de NA em SEMAGESTAC, PESO ou SEXO. Lembre-se também que em dados_sinasc_2 SEXO está como fator com as categorias Feminino e Masculino.
 
+<<<<<<< HEAD
 
 # Tarefa 9. Obter as frequências das categorias das variáveis qualitativas e medidas descritivas de variáveis quantitativas e salvar os resultados em novas variáveis.
 # Exemplo: freq_SEXO = table(dados_sinasc_2$SEXO)   media_peso = mean(dados_sinasc_2$PESO)
@@ -139,6 +284,197 @@
 
 # Tarefa 11: Exporte o banco de dados com o nome SINASC_UF.csv
 
+=======
+# Leitura da Tabela PIG
+tabela_pig <- read.csv("Tabela_PIG_Brasil.csv", sep = ";", dec = ",")
+tabela_pig$SEXO <- factor(trimws(tabela_pig$SEXO), levels = c("Masculino", "Feminino"))
+
+# Merge
+dados_sinasc_2 <- merge(dados_sinasc_2, tabela_pig, by = c("SEMAGESTAC", "SEXO"), all.x = TRUE)
+
+# Criação de F_PIG respeitando Gravidez Única e lidando com NAs
+dados_sinasc_2$F_PIG <- ifelse(dados_sinasc_2$GRAVIDEZ != "Única", NA,
+                               ifelse(is.na(dados_sinasc_2$PESO) | is.na(dados_sinasc_2$PESO_P10) | is.na(dados_sinasc_2$PESO_P90), NA,
+                                      ifelse(dados_sinasc_2$PESO < dados_sinasc_2$PESO_P10, "PIG",
+                                             ifelse(dados_sinasc_2$PESO <= dados_sinasc_2$PESO_P90, "AIG", "GIG")
+                                      )
+                               )
+)
+dados_sinasc_2$F_PIG <- factor(dados_sinasc_2$F_PIG, levels = c("PIG", "AIG", "GIG"))
+
+
+# Tarefas 9 e 10 (reformulada)
+
+# Crie um banco de dados contendo as 103 variáveis listadas no arquivo
+# “Variáveis - Projeto - Tarefas 9 e 10 da Etapa 1.pdf”
+# O banco final deverá possuir:
+#  103 colunas, correspondentes às variáveis especificadas;
+#  n + 1 linhas, onde:
+#  n corresponde ao número de municípios distintos da UF em análise
+#  a primeira linha corresponde aos valores agregados para a UF como
+# um todo;
+# as demais linhas correspondem aos municípios da UF.
+# As variáveis devem ser construídas a partir dos microdados do SINASC,
+# 
+# respeitando os nomes e a ordem especificados 
+
+# Função para agregar na base as 103 variáveis 
+resumoVariaveis <- function(df) {
+  df %>% summarise(
+    TN = n(),
+    TNRC = sum(COMPLETO_61, na.rm = TRUE),
+    TNRCR = sum(COMPLETO_22, na.rm = TRUE),
+    
+    TGI_15 = sum(IDADEMAE < 15, na.rm = TRUE),
+    TGI_15_19 = sum(IDADEMAE >= 15 & IDADEMAE <= 19, na.rm = TRUE),
+    TGI_20_24 = sum(IDADEMAE >= 20 & IDADEMAE <= 24, na.rm = TRUE),
+    TGI_25_29 = sum(IDADEMAE >= 25 & IDADEMAE <= 29, na.rm = TRUE),
+    TGI_30_34 = sum(IDADEMAE >= 30 & IDADEMAE <= 34, na.rm = TRUE),
+    TGI_35_39 = sum(IDADEMAE >= 35 & IDADEMAE <= 39, na.rm = TRUE),
+    TGI_40_44 = sum(IDADEMAE >= 40 & IDADEMAE <= 44, na.rm = TRUE),
+    TGI_45_49 = sum(IDADEMAE >= 45 & IDADEMAE <= 49, na.rm = TRUE),
+    TGI_50 = sum(IDADEMAE >= 50, na.rm = TRUE),
+    TGIF = sum(IDADEMAE >= 15 & IDADEMAE <= 49, na.rm = TRUE),
+    
+    IM_P25 = quantile(IDADEMAE, 0.25, na.rm = TRUE),
+    IM_P50 = quantile(IDADEMAE, 0.50, na.rm = TRUE),
+    IM_P75 = quantile(IDADEMAE, 0.75, na.rm = TRUE),
+    IM_MD = mean(IDADEMAE, na.rm = TRUE),
+    IM_DP = sd(IDADEMAE, na.rm = TRUE),
+    
+    EM_S = sum(ESCMAE2010 == "Sem escolaridade", na.rm = TRUE),
+    EM_FI = sum(ESCMAE2010 == "Fundamental I", na.rm = TRUE),
+    EM_FII = sum(ESCMAE2010 == "Fundamental II", na.rm = TRUE),
+    EM_M = sum(ESCMAE2010 == "Médio", na.rm = TRUE),
+    EM_SI = sum(ESCMAE2010 == "Superior incompleto", na.rm = TRUE),
+    EM_SC = sum(ESCMAE2010 == "Superior completo", na.rm = TRUE),
+    
+    TGRC_B = sum(RACACORMAE == "Branca", na.rm = TRUE),
+    TGRC_PT = sum(RACACORMAE == "Preta", na.rm = TRUE),
+    TGRC_A = sum(RACACORMAE == "Amarela", na.rm = TRUE),
+    TGRC_PD = sum(RACACORMAE == "Parda", na.rm = TRUE),
+    TGRC_I = sum(RACACORMAE == "Indígena", na.rm = TRUE),
+    
+    TGSC = sum(ESTCIV == "Sem companheiro", na.rm = TRUE),
+    TGCC = sum(ESTCIV == "Com companheiro", na.rm = TRUE),
+    TGPRI = sum(PARIDADE == "Nenhuma", na.rm = TRUE),
+    TGNPRI = sum(PARIDADE == "Uma ou mais", na.rm = TRUE),
+    
+    TGU = sum(GRAVIDEZ == "Única", na.rm = TRUE),
+    TGG = sum(GRAVIDEZ %in% c("Dupla", "Tríplice+"), na.rm = TRUE),
+    
+    TGD_22 = sum(GESTACAO == "Menos de 22 sem", na.rm = TRUE),
+    TGD_22_27 = sum(GESTACAO == "22-27 sem", na.rm = TRUE),
+    TGD_28_31 = sum(GESTACAO == "28-31 sem", na.rm = TRUE),
+    TGD_32_36 = sum(GESTACAO == "32-36 sem", na.rm = TRUE),
+    TGD_37_41 = sum(GESTACAO == "37-41 sem", na.rm = TRUE),
+    TGD_42 = sum(GESTACAO == "42+ sem", na.rm = TRUE),
+    
+    TGD_PRT = sum(SEMAGESTAC < 37, na.rm = TRUE),
+    TGD_AT = sum(SEMAGESTAC >= 37 & SEMAGESTAC <= 41, na.rm = TRUE),
+    TGD_PST = sum(SEMAGESTAC >= 42, na.rm = TRUE),
+    
+    DG_P25 = quantile(SEMAGESTAC, 0.25, na.rm = TRUE),
+    DG_P50 = quantile(SEMAGESTAC, 0.50, na.rm = TRUE),
+    DG_P75 = quantile(SEMAGESTAC, 0.75, na.rm = TRUE),
+    DG_MD = mean(SEMAGESTAC, na.rm = TRUE),
+    DG_DP = sd(SEMAGESTAC, na.rm = TRUE),
+    
+    TKC_NR = sum(KOTELCHUCK == "Não realizou", na.rm = TRUE),
+    TKC_ID = sum(KOTELCHUCK == "Inadequado", na.rm = TRUE),
+    TKC_IT = sum(KOTELCHUCK == "Intermediário", na.rm = TRUE),
+    TKC_AD = sum(KOTELCHUCK == "Adequado", na.rm = TRUE),
+    TKC_MAD = sum(KOTELCHUCK == "Mais que adequado", na.rm = TRUE),
+    
+    TGPRG_S = sum(PERIG == "Sim", na.rm = TRUE),
+    TGPRG_N = sum(PERIG == "Não", na.rm = TRUE),
+    
+    TPV = sum(PARTO == "Vaginal", na.rm = TRUE),
+    TPC = sum(PARTO == "Cesáreo", na.rm = TRUE),
+    
+    TRAP_C = sum(TPAPRESENT == "Cefálica", na.rm = TRUE),
+    TRAP_P = sum(TPAPRESENT == "Pélvica ou podálica", na.rm = TRUE),
+    TRAP_T = sum(TPAPRESENT == "Transversa", na.rm = TRUE),
+    
+    TGROB_1 = sum(TPROBSON == 1, na.rm = TRUE),
+    TGROB_2 = sum(TPROBSON == 2, na.rm = TRUE),
+    TGROB_3 = sum(TPROBSON == 3, na.rm = TRUE),
+    TGROB_4 = sum(TPROBSON == 4, na.rm = TRUE),
+    TGROB_5 = sum(TPROBSON == 5, na.rm = TRUE),
+    TGROB_6 = sum(TPROBSON == 6, na.rm = TRUE),
+    TGROB_7 = sum(TPROBSON == 7, na.rm = TRUE),
+    TGROB_8 = sum(TPROBSON == 8, na.rm = TRUE),
+    TGROB_9 = sum(TPROBSON == 9, na.rm = TRUE),
+    TGROB_10 = sum(TPROBSON == 10, na.rm = TRUE),
+    
+    TNLOC_H = sum(LOCNASC == "Hospital", na.rm = TRUE),
+    TNLOC_ES = sum(LOCNASC == "Outro estabelecimento", na.rm = TRUE),
+    TNLOC_D = sum(LOCNASC == "Domicílio", na.rm = TRUE),
+    TNLOC_O = sum(LOCNASC == "Outros", na.rm = TRUE),
+    TNLOC_AI = sum(LOCNASC == "Aldeia Indígena", na.rm = TRUE),
+    
+    TRS_M = sum(SEXO == "Masculino", na.rm = TRUE),
+    TRS_F = sum(SEXO == "Feminino", na.rm = TRUE),
+    
+    TRRC_B = sum(RACACOR == "Branca", na.rm = TRUE),
+    TRRC_PT = sum(RACACOR == "Preta", na.rm = TRUE),
+    TRRC_A = sum(RACACOR == "Amarela", na.rm = TRUE),
+    TRRC_PD = sum(RACACOR == "Parda", na.rm = TRUE),
+    TRRC_I = sum(RACACOR == "Indígena", na.rm = TRUE),
+    
+    TRP_BP = sum(F_PESO == "Baixo peso", na.rm = TRUE),
+    TRP_N = sum(F_PESO == "Peso normal", na.rm = TRUE),
+    TRP_M = sum(F_PESO == "Macrossomia", na.rm = TRUE),
+    
+    PESO_P25 = quantile(PESO, 0.25, na.rm = TRUE),
+    PESO_P50 = quantile(PESO, 0.50, na.rm = TRUE),
+    PESO_P75 = quantile(PESO, 0.75, na.rm = TRUE),
+    PESO_MD = mean(PESO, na.rm = TRUE),
+    PESO_DP = sd(PESO, na.rm = TRUE),
+    
+    TRPIG_P = sum(F_PIG == "PIG", na.rm = TRUE),
+    TRPIG_A = sum(F_PIG == "AIG", na.rm = TRUE),
+    TRPIG_G = sum(F_PIG == "GIG", na.rm = TRUE),
+    
+    TRAPG5_B = sum(F_APGAR5 == "Baixo", na.rm = TRUE),
+    TRAPG5_N = sum(F_APGAR5 == "Normal", na.rm = TRUE),
+    
+    APG5_MD = mean(APGAR5, na.rm = TRUE),
+    APG5_DP = sd(APGAR5, na.rm = TRUE),
+    
+    TRAC = sum(IDANOMAL == "Sim", na.rm = TRUE),
+    TRSAC = sum(IDANOMAL == "Não", na.rm = TRUE)
+  )
+}
+
+# Agregação por Municípios com a correção de CODMUNRES como caractere (evita erro no bind)
+resumo_municipios <- dados_sinasc_2 %>%
+  mutate(CODMUNRES = as.character(CODMUNRES)) %>% 
+  group_by(CODMUNRES) %>%
+  resumoVariaveis() %>%
+  mutate(ANO = 2015, NIVEL = "MUNICIPIO") %>%
+  ungroup() %>%
+  select(ANO, NIVEL, CODMUNRES, everything())
+
+# Agregação da UF (agrupando todos os municípios)
+resumo_uf <- dados_sinasc_2 %>%
+  mutate(CODMUNRES = "12") %>% 
+  group_by(CODMUNRES) %>%
+  resumoVariaveis() %>%
+  mutate(ANO = 2015, NIVEL = "UF") %>%
+  ungroup() %>%
+  select(ANO, NIVEL, CODMUNRES, everything())
+
+# Empilhar linhas e Exportar
+SINASC_AC <- bind_rows(resumo_uf, resumo_municipios)
+
+nrow(SINASC_AC)
+ncol(SINASC_AC)
+
+# Tarefa 11: Exporte o banco de dados com o nome SINASC_UF.csv
+
+write.csv(base_final, "SINASC_AC.csv", row.names = FALSE)
+>>>>>>> sinasc
 
 
 # Ao terminar a ETAPA 1 commite e envie para o repositório REMOTO com o comentário "Dados da UF e Script Etapa 1"
