@@ -412,20 +412,43 @@ write.csv(base_final, "SINASC_AC.csv", row.names = FALSE)
 # verificar se a leitura foi feita corretamente e a estrutura dos dados
 # nomeie o banco de dados como dados_sim
 
-dados_sim = read.csv2("Mortalidade_Geral_2015.csv", header = T)
+dados_sim <- read.csv("Mortalidade_Geral_2015.csv",
+                      header = TRUE,
+                      sep = ";",
+                      dec = ",")
 
+head(dados_sim)
+str(dados_sim)
 
 # Tarefa 2. Reduzir dados_sim apenas para as colunas que serão utilizadas, nomeando este novo banco de dados como dados_sim_1
 # as colunas serão: 1, 3, 4, 8, 9, 10, 11, 14, 17, 35, 36, 37, 47, 77, 84
 # nomes das respectivas variáveis: CONTADOR, TIPOBITO, DTOBITO, DTNASC, IDADE, SEXO, RACACOR, ESC2010, CODMUNRES, TPMORTEOCO, 
 # OBITOGRAV, OBITOPUERP, CAUSABAS, TPOBITOCOR, MORTEPARTO
 
-colunas_selecionadas <- c(1, 3, 4, 8, 9, 10, 11, 14, 17, 35, 36, 37, 47, 77, 84)
-dados_sim_1 = dados_sinasc_ac[, colunas_selecionadas]
+# Tarefa 2. Selecionar variáveis utilizadas
 
-names(dados_sim_1) <- c("CONTADOR", "TIPOBITO", "DTOBITO", "DTNASC", "IDADE", 
-                           "SEXO", "RACACOR", "OBITOGRAV", "OBITOPUERP", "CAUSABAS", 
-                           "TPOBITOCOR", "MORTEPARTO")
+colunas_sim <- c(1, 3, 4, 8, 9, 10, 11, 14, 17,
+                 35, 36, 37, 47, 77, 84)
+
+dados_sim_1 <- dados_sim[, colunas_sim]
+
+names(dados_sim_1) <- c(
+  "CONTADOR",
+  "TIPOBITO",
+  "DTOBITO",
+  "DTNASC",
+  "IDADE",
+  "SEXO",
+  "RACACOR",
+  "ESC2010",
+  "CODMUNRES",
+  "TPMORTEOCO",
+  "OBITOGRAV",
+  "OBITOPUERP",
+  "CAUSABAS",
+  "TPOBITOCOR",
+  "MORTEPARTO"
+)
 
 # Tarefa 3. Reduzir dados_sim_1 apenas para o estado que o aluno irá trabalhar (utilizar os dois primeiros dígitos de CODMUNRES), nomeando este novo banco de dados como dados_sim_2
 # Códigos das UF: 11: RO, 12: AC, 13: AM, 14: RR, 15: PA, 16: AP, 17: TO, 21: MA, 22: PI, 23: CE, 24: RN
@@ -441,9 +464,19 @@ names(dados_sim_1) <- c("CONTADOR", "TIPOBITO", "DTOBITO", "DTNASC", "IDADE",
 
 # Exportar o arquivo com o nome dados_sim_2.csv
 
+dados_sim_2 <- subset(
+  dados_sim_1,
+  substr(as.character(CODMUNRES), 1, 2) == "12"
+)
+
+nrow(dados_sim_2)
+
 
 # Ao concluir a Tarefa 3 da Etapa 2 commite e envie para o repositório REMOTO o script e dados_sim_2.csv com o comentário "Dados do estado UF (coloque o nome da UF) e script de sua obtenção"
 
+write.csv(dados_sim_2,
+          "dados_sim_2.csv",
+          row.names = FALSE)
 
 # Tarefa 4. Verificar em dados_sim_2 a frequência das categorias das seguintes variáveis: TIPOBITO, SEXO, RACACOR, 
 # TPMORTEOCO, OBITOGRAV, OBITOPUERP, CAUSABAS, TPOBITOCOR, MORTEPARTO
