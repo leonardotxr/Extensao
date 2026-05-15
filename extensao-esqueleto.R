@@ -844,10 +844,117 @@ write.csv(SIM_AC, "SIM_AC.csv", row.names = FALSE)
 # 12 POPRC_F_15_49
 # 13 POPRC_F_50
 
-
-
 # Exporte o arquivo em formato CSV
 # Faça o commit com a mensagem "Script e dados TAREFA 3 - SIDRA"
+
+library(dplyr)
+
+# Leitura dos 4 arquivos 
+
+# 1. População estimada 2015 (UF + municípios)
+tab_6579 <- read.csv("população residente estimada - UF e municípios - 2015 - SIDRA - tabela_6579.csv",
+                     sep = ";", header = TRUE,
+                     col.names = c("CODMUNRES", "NOME", "POPRE_T"),
+                     encoding = "UTF-8")
+
+# 2. População Censo 2010 – total e por sexo (UF + municípios)
+tab_1552_sexo <- read.csv("população residente censo 2010 - UF e municípios - total e por sexo - SIDRA - tabela_1552.csv",
+                          sep = ";", header = TRUE,
+                          col.names = c("CODMUNRES", "NOME", "POPRC_T", "POPRC_M", "POPRC_F"),
+                          encoding = "UTF-8")
+
+# 3. População Censo 2010 – faixa etária e sexo – UF
+tab_1552_faixa_uf <- read.csv("população residente censo 2010 - por faixa etária -  UF - SIDRA - tabela_1552.csv",
+                              sep = ";", header = TRUE,
+                              col.names = c("CODMUNRES", "ESTADO", "F_IDADE", "POP", "POPM", "POPF"),
+                              encoding = "UTF-8")
+
+# 4. População Censo 2010 – faixa etária e sexo – municípios
+tab_1552_faixa_mun <- read.csv("população residente censo 2010 - por faixa etária e sexo -  municípios - SIDRA - tabela_1552.csv",
+                               sep = ";", header = TRUE,
+                               col.names = c("CODMUNRES", "F_IDADE", "POP", "POPM", "POPF"),
+                               encoding = "UTF-8")
+
+# Filtrando apenas Acre (CODMUNRES começa com "12") 
+
+# Função auxiliar para filtrar AC
+filtrar_ac <- function(df) {
+  df[substr(as.character(df$CODMUNRES), 1, 2) == "12", ]
+}
+
+tab_6579_ac        <- filtrar_ac(tab_6579)
+tab_1552_sexo_ac   <- filtrar_ac(tab_1552_sexo)
+tab_1552_faixa_uf_ac  <- tab_1552_faixa_uf[tab_1552_faixa_uf$CODMUNRES == 12, ]
+tab_1552_faixa_mun_ac <- filtrar_ac(tab_1552_faixa_mun)
+
+# Faixas etárias de interesse 
+# POPRC_15  - < 15 anos:  "0 a 4 anos", "5 a 9 anos", "10 a 14 anos"
+# POPRC_15_49 - 15 a 49:   "15 a 19 anos" ... "45 a 49 anos"
+# POPRC_50    - >= 50 anos: "50 a 54 anos" ... "100 anos ou mais"
+
+faixas_lt15  <- c("0 a 4 anos", "5 a 9 anos", "10 a 14 anos")
+faixas_15_49 <- c("15 a 19 anos", "20 a 24 anos", "25 a 29 anos",
+                  "30 a 34 anos", "35 a 39 anos", "40 a 44 anos", "45 a 49 anos")
+faixas_50    <- c("50 a 54 anos", "55 a 59 anos", "60 a 64 anos",
+                  "65 a 69 anos", "70 a 74 anos", "75 a 79 anos",
+                  "80 a 89 anos", "90 a 99 anos", "100 anos ou mais")
+
+# Função para agregar faixas etárias por CODMUNRES 
+agregar_faixas <- function(df_faixa) {
+  df_faixa <- df_faixa[!is.na(df_faixa$F_IDADE), ]
+  
+  df_faixa |>
+    group_by(CODMUNRES) |>
+    summarise(
+      POPRC_15    = sum(POP [F_IDADE %in% faixas_lt15 ], na.rm = TRUE),
+      POPRC_15_49 = sum(POP [F_IDADE %in% faixas_15_49], na.rm = TRUE),
+      POPRC_50    = sum(POP [F_IDADE %in% faixas_50   ], na.rm = TRUE),
+      POPRC_F_15    = sum(POPF[F_IDADE %in% faixas_lt15 ], na.rm = TRUE),
+      POPRC_F_15_49 = sum(POPF[F_IDADE %in% faixas_15_49], na.rm = TRUE),
+      POPRC_F_50    = sum(POPF[F_IDADE %in% faixas_50   ], na.rm = TRUE),
+      .groups = "drop"
+    )
+}
+
+# Agregando faixas para UF e para municípios
+faixas_uf  <- agregar_faixas(tab_1552_faixa_uf_ac)
+faixas_mun <- agregar_faixas(tab_1552_faixa_mun_ac)
+
+# Montando linha da UF 
+uf_base <- tab_6579_ac[tab_6579_ac$CODMUNRES == 12, c("CODMUNRES", "POPRE_T")]
+uf_sexo <- tab_1552_sexo_ac[tab_1552_sexo_ac$CODMUNRES == 12,
+                            c("CODMUNRES", "POPRC_T", "POPRC_M", "POPRC_F")]
+
+linha_uf <- uf_base |>
+  left_join(uf_sexo,   by = "CODMUNRES") |>
+  left_join(faixas_uf, by = "CODMUNRES") |>
+  mutate(ANO = 2015, NIVEL = "UF", CODMUNRES = as.character(CODMUNRES)) |>
+  select(ANO, NIVEL, CODMUNRES, POPRE_T, POPRC_T, POPRC_M, POPRC_F,
+         POPRC_15, POPRC_15_49, POPRC_50,
+         POPRC_F_15, POPRC_F_15_49, POPRC_F_50)
+
+# Montando linhas dos municípios 
+mun_base <- tab_6579_ac[tab_6579_ac$CODMUNRES != 12, c("CODMUNRES", "POPRE_T")]
+mun_sexo <- tab_1552_sexo_ac[tab_1552_sexo_ac$CODMUNRES != 12,
+                             c("CODMUNRES", "POPRC_T", "POPRC_M", "POPRC_F")]
+
+linhas_mun <- mun_base |>
+  left_join(mun_sexo,   by = "CODMUNRES") |>
+  left_join(faixas_mun, by = "CODMUNRES") |>
+  mutate(ANO = 2015, NIVEL = "MUNICIPIO", CODMUNRES = as.character(CODMUNRES)) |>
+  select(ANO, NIVEL, CODMUNRES, POPRE_T, POPRC_T, POPRC_M, POPRC_F,
+         POPRC_15, POPRC_15_49, POPRC_50,
+         POPRC_F_15, POPRC_F_15_49, POPRC_F_50)
+
+# Empilhar UF + municípios 
+SIDRA_AC <- bind_rows(linha_uf, linhas_mun)
+
+nrow(SIDRA_AC)  
+ncol(SIDRA_AC)  
+
+# Exportando o arquivo 
+write.csv(SIDRA_AC, "SIDRA_AC.csv", row.names = FALSE)
+
 
 
 #####################################################################################################
