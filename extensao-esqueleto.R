@@ -1216,6 +1216,63 @@ write.csv(SINISA_AC, "SINISA_AC.csv", row.names = FALSE)
 # Exporte o arquivo em formato CSV
 # Faça o commit com a mensagem "Script e dados TAREFA 3 - ATLAS"
 
+# Lendo o arquivo
+
+# IDHM UF (2010 censo + 2015 PNAD + por sexo)
+idhm_uf <- read.csv("IDHM - 2010 (CENSO) e 2015 (PNAD) - total e por sexo - UF - Atlas Brasil.csv",
+                    sep = ";", header = TRUE, encoding = "UTF-8")[, 1:7]
+names(idhm_uf) <- c("UF", "IDHM_CA", "IDHM_A", "IDHM_CA_M", "IDHM_A_M", "IDHM_CA_F", "IDHM_A_F")
+
+# IDHM municípios (2010 censo)
+idhm_mun <- read.csv("IDHM - 2010 - municípios - Atlas Brasil.csv",
+                     sep = ";", header = TRUE, encoding = "UTF-8")[, 1:2]
+names(idhm_mun) <- c("municipio", "IDHM_CA")
+
+# Tabela de códigos (para linkar município ao CODMUNRES)
+# já foi lida acima como cod_mun / cod_ac
+
+# Convertendo vírgula para ponto
+conv <- function(x) as.numeric(gsub(",", ".", as.character(x)))
+
+idhm_uf[, 2:7]    <- lapply(idhm_uf[, 2:7],    conv)
+idhm_mun$IDHM_CA  <- conv(idhm_mun$IDHM_CA)
+
+# Linha da UF (Acre) 
+linha_uf_atlas <- idhm_uf[idhm_uf$UF == "Acre", ] |>
+  mutate(ANO = 2015, NIVEL = "UF", CODMUNRES = "12") |>
+  select(ANO, NIVEL, CODMUNRES, IDHM_A, IDHM_CA, IDHM_CA_M, IDHM_CA_F)
+
+# Municípios do Acre 
+# O arquivo de municípios tem o nome no formato "Municipio (UF)"
+# Extrair apenas os do AC
+idhm_mun_ac <- idhm_mun[grepl("\\(AC\\)$", idhm_mun$municipio), ]
+
+# Limpar nome para fazer join com tabela de códigos
+idhm_mun_ac$municipio_limpo <- trimws(gsub("\\s*\\(AC\\)$", "", idhm_mun_ac$municipio))
+
+# Merge com tabela de códigos do AC
+linhas_mun_atlas <- idhm_mun_ac |>
+  left_join(cod_ac[, c("municipio", "CODMUNRES")], 
+            by = c("municipio_limpo" = "municipio")) |>
+  mutate(
+    ANO      = 2015,
+    NIVEL    = "MUNICIPIO",
+    CODMUNRES = as.character(CODMUNRES),
+    IDHM_A   = NA_real_,   # PNAD 2015 não disponível para municípios
+    IDHM_CA_M = NA_real_,  # por sexo só disponível para UF
+    IDHM_CA_F = NA_real_
+  ) |>
+  select(ANO, NIVEL, CODMUNRES, IDHM_A, IDHM_CA, IDHM_CA_M, IDHM_CA_F)
+
+# Empilhando
+ATLAS_AC <- bind_rows(linha_uf_atlas, linhas_mun_atlas)
+
+nrow(ATLAS_AC)
+ncol(ATLAS_AC)  
+
+# ── Exportar ──────────────────────────────────────────────────
+write.csv(ATLAS_AC, "ATLAS_AC.csv", row.names = FALSE)
+
 
 
 #####################################################################################################
