@@ -1124,6 +1124,7 @@ ncol(SIDRA_AC)
 # Exportando o arquivo 
 write.csv(SIDRA_AC, "SIDRA_AC.csv", row.names = FALSE)
 
+####################################################################################
 
 # Tarefa 2: Acesso aos bancos de dados do SINISA e obtenção da informação
 # Escreva os comandos da Tarefa 2 estando na branch OUTROS# Leia o arquivo agua e esgoto - município - 2015.csv 
@@ -1136,6 +1137,66 @@ write.csv(SIDRA_AC, "SIDRA_AC.csv", row.names = FALSE)
 
 # Exporte o arquivo em formato CSV
 # Faça o commit com a mensagem "Script e dados TAREFA 3 - SINISA"
+
+
+library(dplyr)
+
+# Lendo o arquivo
+sinisa <- read.csv("agua e esgoto - município - 2015.csv",
+                   sep = ";", header = TRUE,
+                   col.names = c("CODMUNRES_6", "Municipio", "Estado", "Ano", "POPR_RA", "POPR_RE"),
+                   encoding = "UTF-8")
+
+# Filtrando Acre 
+sinisa_ac <- sinisa[sinisa$Estado == "AC", ]
+
+# tirando os pontos como separador de milhar e convertendo vírgula para ponto nos valores numéricos 
+sinisa_ac$POPR_RA <- as.numeric(gsub("\\.", "", gsub(",", ".", sinisa_ac$POPR_RA)))
+sinisa_ac$POPR_RE <- as.numeric(gsub("\\.", "", gsub(",", ".", sinisa_ac$POPR_RE)))
+
+# O SINISA usa código de 6 dígitos (sem dígito verificador)
+# Convertendo para 7 dígitos adicionando o dígito verificador via tabela de códigos
+cod_mun <- read.csv("códigos dos municípios - 2010.csv",
+                    sep = ";", header = TRUE,
+                    col.names = c("municipio", "CODMUNRES", "extra"),
+                    encoding = "UTF-8")
+
+cod_ac <- cod_mun[substr(as.character(cod_mun$CODMUNRES), 1, 2) == "12", 
+                  c("municipio", "CODMUNRES")]
+
+# Criar código de 6 dígitos na tabela de códigos para fazer o join
+cod_ac$CODMUNRES_6 <- as.integer(substr(as.character(cod_ac$CODMUNRES), 1, 6))
+
+# fazendo merge para obter CODMUNRES de 7 dígitos
+sinisa_ac <- sinisa_ac |>
+  left_join(cod_ac[, c("CODMUNRES_6", "CODMUNRES")], by = "CODMUNRES_6")
+
+# Montando banco final
+
+# Linha da UF (soma dos municípios)
+linha_uf_sin <- sinisa_ac |>
+  summarise(
+    POPR_RA = sum(POPR_RA, na.rm = TRUE),
+    POPR_RE = sum(POPR_RE, na.rm = TRUE)
+  ) |>
+  mutate(ANO = 2015, NIVEL = "UF", CODMUNRES = "12") |>
+  select(ANO, NIVEL, CODMUNRES, POPR_RA, POPR_RE)
+
+# Linhas dos municípios
+linhas_mun_sin <- sinisa_ac |>
+  mutate(ANO = 2015, NIVEL = "MUNICIPIO", CODMUNRES = as.character(CODMUNRES)) |>
+  select(ANO, NIVEL, CODMUNRES, POPR_RA, POPR_RE)
+
+# Empilhar
+SINISA_AC <- bind_rows(linha_uf_sin, linhas_mun_sin)
+
+nrow(SINISA_AC)  
+ncol(SINISA_AC)  
+
+# ── Exportar ──────────────────────────────────────────────────
+write.csv(SINISA_AC, "SINISA_AC.csv", row.names = FALSE)
+
+############################################################################
 
 # Tarefa 3: Acesso aos bancos de dados do ATLAS  e obtenção da informação
 # Escreva os comandos da Tarefa 3 estando na branch OUTROS
