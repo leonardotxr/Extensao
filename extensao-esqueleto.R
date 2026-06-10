@@ -1433,13 +1433,11 @@ BDEM_AC_2015 <- DA_AC |>
 nrow(BDEM_AC_2015)  
 ncol(BDEM_AC_2015)  
 
-# exportando
+# exportando o arquivo
 write.csv(BDEM_AC_2015, "BDEM_AC_2015.csv", row.names = FALSE)
 
 # Após a criação do banco, fazer commit "Script e dados BDEM_UF_2015"
 # Após exportar, fazer commit "Script e dados BDEM"
-
-
 
 
 ############################################################################################
