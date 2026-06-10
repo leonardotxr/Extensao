@@ -1276,25 +1276,170 @@ write.csv(ATLAS_AC, "ATLAS_AC.csv", row.names = FALSE)
 
 
 ################################################################
-# ETAPA 4: GERAR BANCO DE DADOS FINAL DO ESTADO COM DADOS DO SIDRA, ATLAS, SINASC, SIM, SINISA E INDICADORES
+# ETAPA 4: GERAR BANCO DE DADOS FINAL DO ESTADO COM DADOS DO SIDRA, ATLAS,
+# SINASC, SIM, SINISA E INDICADORES
 ################################################################
 
-
-# Tarefa 1: Fazer o merge dos bancos de dados criados nas etapas anteriores (SIDRA_UF, ATLAS_ UF,  SINASC_UF, SIM_UF e SINISA_UF), 
-# sendo que as variáveis deverão seguir a ordem
-
-# ANO, NIVEL, CODMUNRES (uma única vez), variáveis do SIDRA, do ATLAS, do SINASC, do SIM e da SINISA. No merge deve constar qualquer município que esteja em pelo menos um dos bancos
+# Tarefa 1: Fazer o merge dos bancos de dados criados nas etapas anteriores
+# (SIDRA_UF, ATLAS_UF, SINASC_UF, SIM_UF e SINISA_UF), sendo que as variáveis
+# deverão seguir a ordem ANO, NIVEL, CODMUNRES (uma única vez), variáveis do
+# SIDRA, do ATLAS, do SINASC, do SIM e da SINISA. No merge deve constar qualquer
+# município que esteja em pelo menos um dos bancos.
 # Chamar o banco de dados de DA_UF
+# Após o merge dos bancos, fazer commit "Script e dados agregados da UF"
 
-# Após o merge dos bancos, fazer commit “Script e dados agregados da UF”
+library(dplyr)
+
+# Lendo os bancos necessários
+SIDRA_AC   <- read.csv("SIDRA_AC.csv",   header = TRUE, sep = ",", encoding = "UTF-8")
+ATLAS_AC   <- read.csv("ATLAS_AC.csv",   header = TRUE, sep = ",", encoding = "UTF-8")
+SINASC_AC  <- read.csv("SINASC_AC.csv",  header = TRUE, sep = ",", encoding = "UTF-8")
+SIM_AC     <- read.csv("SIM_AC.csv",     header = TRUE, sep = ",", encoding = "UTF-8")
+SINISA_AC  <- read.csv("SINISA_AC.csv",  header = TRUE, sep = ",", encoding = "UTF-8")
+
+# Garantindo que CODMUNRES é character em todos os bancos
+SIDRA_AC$CODMUNRES  <- as.character(SIDRA_AC$CODMUNRES)
+ATLAS_AC$CODMUNRES  <- as.character(ATLAS_AC$CODMUNRES)
+SINASC_AC$CODMUNRES <- as.character(SINASC_AC$CODMUNRES)
+SIM_AC$CODMUNRES    <- as.character(SIM_AC$CODMUNRES)
+SINISA_AC$CODMUNRES <- as.character(SINISA_AC$CODMUNRES)
+
+# preparando o merge 
+# SIDRA e ATLAS têm CODMUNRES com 7 dígitos - merge direto
+# SINASC, SIM e SINISA têm CODMUNRES com 6 dígitos - merge via código 6 dígitos
+
+SIM_AC <- subset(SIM_AC, CODMUNRES != "120000") # Retirando codigo extra que da problema no SIM_AC
+
+# Merge de SIDRA + ATLAS (7 dígitos)
+BD1 <- merge(SIDRA_AC, ATLAS_AC[, !names(ATLAS_AC) %in% c("ANO","NIVEL")],
+             by = "CODMUNRES", all = TRUE)
+
+# garantindo que ANO e NIVEL estejam corretos após merge
+BD1$ANO   <- 2015
+BD1$NIVEL <- ifelse(nchar(BD1$CODMUNRES) <= 2, "UF", "MUNICIPIO")
+
+# merge de SINASC + SIM + SINISA (6 dígitos)
+
+#transoformando SINISA em 6 digitos
+SINISA_AC <- SINISA_AC |>
+  mutate(
+    CODMUNRES = ifelse(
+      nchar(CODMUNRES) == 7,
+      substr(CODMUNRES, 1, 6),
+      CODMUNRES
+    )
+  )
+
+BD2_temp <- merge(SINASC_AC, SIM_AC[, !names(SIM_AC) %in% c("ANO","NIVEL")],
+                  by = "CODMUNRES", all = TRUE)
+
+BD2 <- merge(BD2_temp, SINISA_AC[, !names(SINISA_AC) %in% c("ANO","NIVEL")],
+             by = "CODMUNRES", all = TRUE)
+
+BD2$ANO   <- 2015
+BD2$NIVEL <- ifelse(nchar(BD2$CODMUNRES) <= 2, "UF", "MUNICIPIO")
+
+# preparando BD1 para o merge com BD2
+# BD1 tem CODMUNRES com 7 dígitos; BD2 tem 6 dígitos
+# Renomear CODMUNRES de BD1 para COD7 e criar CODMUNRES com 6 dígitos
+BD1 <- BD1 |>
+  rename(COD7 = CODMUNRES) |>
+  mutate(CODMUNRES = ifelse(NIVEL == "UF",
+                            COD7,
+                            substr(as.character(COD7), 1, 6)))
+
+# merge de BD1 e BD2 pelo CODMUNRES de 6 dígitos
+BD3 <- merge(BD1, BD2[, !names(BD2) %in% c("ANO","NIVEL")],
+             by = "CODMUNRES", all = TRUE)
+
+# Excluindo CODMUNRES (6 dígitos) e renomear COD7 para CODMUNRES
+BD3$CODMUNRES <- NULL
+BD3 <- BD3 |> rename(CODMUNRES = COD7)
+
+# Garantir ANO e NIVEL corretos
+BD3$ANO   <- 2015
+BD3$NIVEL <- ifelse(nchar(as.character(BD3$CODMUNRES)) <= 2, "UF", "MUNICIPIO")
+
+# Ordenar colunas: ANO, NIVEL, CODMUNRES + variáveis na ordem correta
+# SIDRA (10 vars), ATLAS (4 vars), SINASC (100 vars), SIM (38 vars), SINISA (2 vars)
+vars_sidra  <- names(SIDRA_AC)[!names(SIDRA_AC) %in% c("ANO","NIVEL","CODMUNRES")]
+vars_atlas  <- names(ATLAS_AC)[!names(ATLAS_AC) %in% c("ANO","NIVEL","CODMUNRES")]
+vars_sinasc <- names(SINASC_AC)[!names(SINASC_AC) %in% c("ANO","NIVEL","CODMUNRES")]
+vars_sim    <- names(SIM_AC)[!names(SIM_AC) %in% c("ANO","NIVEL","CODMUNRES")]
+vars_sinisa <- names(SINISA_AC)[!names(SINISA_AC) %in% c("ANO","NIVEL","CODMUNRES")]
+
+ordem_colunas <- c("ANO","NIVEL","CODMUNRES",
+                   vars_sidra, vars_atlas, vars_sinasc, vars_sim, vars_sinisa)
+
+# Manter apenas colunas que existem no BD3
+ordem_colunas <- ordem_colunas[ordem_colunas %in% names(BD3)]
+
+DA_AC <- BD3[, ordem_colunas]
+
+# Colocar linha da UF primeiro, depois municípios
+DA_AC <- DA_AC[order(DA_AC$NIVEL == "MUNICIPIO"), ]
 
 
-# Tarefa 2: Acrescentar no banco DA_UF os indicadores TFG, TMG, RMM, TMM, TMM_P, TMN, TMN_P, TMN_T e TMI e chamar o banco de BDEM_UF_2015
+nrow(DA_AC)  
+ncol(DA_AC)  
 
-# Após a criação do banco, fazer commit “Script e dados BDEM_UF_2015”
+# Após o merge dos bancos, fazer commit "Script e dados agregados da UF"
 
-# Exporte o arquivo em formato CSV
-# Faça o commit com a mensagem "Script e dados BDEM"
+
+# Tarefa 2: Acrescentar no banco DA_UF os indicadores TFG, TMG, RMM, TMM,
+# TMM_P, TMN, TMN_P, TMN_T e TMI e chamar o banco de BDEM_UF_2015
+# Após a criação do banco, fazer commit "Script e dados BDEM_UF_2015"
+
+# calculando os indicadores (fórmulas adaptadas ao BDEM)
+BDEM_AC_2015 <- DA_UF |>
+  mutate(
+    # Taxa de fecundidade geral
+    TFG   = ifelse(!is.na(TN) & !is.na(POPRC_F_15_49) & POPRC_F_15_49 > 0,
+                   round((TN / POPRC_F_15_49) * 1000, 2), NA),
+    
+    # Taxa de mortalidade geral
+    TMG   = ifelse(!is.na(TO) & !is.na(POPRE_T) & POPRE_T > 0,
+                   round((TO / POPRE_T) * 1000, 2), NA),
+    
+    # Razão de mortalidade materna
+    RMM   = ifelse(!is.na(TO_MT) & !is.na(TN) & TN > 0,
+                   round((TO_MT / TN) * 100000, 2), NA),
+    
+    # Taxa de mortalidade materna
+    TMM   = ifelse(!is.na(TO_MT) & !is.na(POPRC_F_15_49) & POPRC_F_15_49 > 0,
+                   round((TO_MT / POPRC_F_15_49) * 100000, 2), NA),
+    
+    # Taxa de mortalidade materna precoce (até 42 dias)
+    TMM_P = ifelse(!is.na(TO_MT_P) & !is.na(POPRC_F_15_49) & POPRC_F_15_49 > 0,
+                   round((TO_MT_P / POPRC_F_15_49) * 100000, 2), NA),
+    
+    # Taxa de mortalidade neonatal
+    TMN   = ifelse(!is.na(TO_NT) & !is.na(TN) & TN > 0,
+                   round((TO_NT / TN) * 1000, 2), NA),
+    
+    # Taxa de mortalidade neonatal precoce
+    TMN_P = ifelse(!is.na(TO_NT_P) & !is.na(TN) & TN > 0,
+                   round((TO_NT_P / TN) * 1000, 2), NA),
+    
+    # Taxa de mortalidade neonatal tardia
+    TMN_T = ifelse(!is.na(TO_NT_T) & !is.na(TN) & TN > 0,
+                   round((TO_NT_T / TN) * 1000, 2), NA),
+    
+    # Taxa de mortalidade infantil
+    TMI   = ifelse(!is.na(TO_NT) & !is.na(TO_PNT) & !is.na(TN) & TN > 0,
+                   round(((TO_NT + TO_PNT) / TN) * 1000, 2), NA)
+  )
+
+nrow(BDEM_AC_2015)  
+ncol(BDEM_AC_2015)  
+
+# exportando
+write.csv(BDEM_AC_2015, "BDEM_AC_2015.csv", row.names = FALSE)
+
+# Após a criação do banco, fazer commit "Script e dados BDEM_UF_2015"
+# Após exportar, fazer commit "Script e dados BDEM"
+
+
 
 
 ############################################################################################
