@@ -1391,7 +1391,7 @@ ncol(DA_AC)
 # Após a criação do banco, fazer commit "Script e dados BDEM_UF_2015"
 
 # calculando os indicadores (fórmulas adaptadas ao BDEM)
-BDEM_AC_2015 <- DA_UF |>
+BDEM_AC_2015 <- DA_AC |>
   mutate(
     # Taxa de fecundidade geral
     TFG   = ifelse(!is.na(TN) & !is.na(POPRC_F_15_49) & POPRC_F_15_49 > 0,
